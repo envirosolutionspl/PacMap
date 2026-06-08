@@ -1,0 +1,1791 @@
+@import './base.css';
+@import '../game/assets/animations/skins.css';
+@import '../game/assets/animations/motion.css';
+
+body {
+  overflow: hidden;
+  user-select: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.game-shell {
+  --menu-stage-size: clamp(600px, 88vmin, 1120px);
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
+  background:
+    linear-gradient(90deg, rgba(255, 216, 77, 0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(51, 214, 255, 0.04) 1px, transparent 1px), var(--color-background);
+  background-size: 48px 48px;
+  overflow: hidden;
+}
+
+.game-layout {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  min-width: 0;
+  min-height: calc(100vh - 48px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 22px;
+}
+
+.game-layout-hudless {
+  grid-template-rows: 1fr;
+}
+
+.game-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hud-score,
+.hud-level,
+.hud-lives,
+.hud-timer {
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 216, 77, 0.44);
+  border-radius: 8px;
+  background: rgba(16, 19, 26, 0.84);
+}
+
+.hud-score {
+  gap: 12px;
+  padding: 9px 16px;
+}
+
+.hud-level {
+  flex: 1 1 auto;
+  justify-content: center;
+  padding: 9px 14px;
+  overflow: hidden;
+}
+
+.hud-level-value {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hud-status {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.hud-score-label {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.hud-score-value {
+  color: var(--color-yellow);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.hud-lives {
+  justify-content: flex-end;
+  gap: 7px;
+  padding: 8px 14px;
+}
+
+.hud-timer {
+  gap: 10px;
+  padding: 9px 14px;
+}
+
+.hud-timer-value {
+  color: var(--color-yellow);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.hud-timer-low {
+  border-color: rgba(255, 95, 122, 0.7);
+}
+
+.hud-timer-low .hud-timer-value {
+  color: #ff5f7a;
+  text-shadow: 0 0 10px rgba(255, 95, 122, 0.48);
+}
+
+.hud-heart {
+  color: #ff5f7a;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 95, 122, 0.48);
+}
+
+.stage-wrap {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.game-slogan {
+  max-width: min(680px, 100%);
+  color: var(--color-yellow);
+  font-family: 'Lucida Console', Monaco, Consolas, Menlo, 'Courier New', monospace;
+  font-size: clamp(1.02rem, 1.85vw, 1.55rem);
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: center;
+  text-shadow:
+    2px 0 0 rgba(255, 79, 139, 0.62),
+    -2px 0 0 rgba(51, 214, 255, 0.58),
+    0 0 10px rgba(255, 216, 77, 0.4);
+  text-transform: uppercase;
+  white-space: normal;
+}
+
+.game-stage {
+  position: relative;
+  width: min(70vh, 840px, 100%);
+  min-width: 0;
+  max-width: 100%;
+  aspect-ratio: 1;
+  filter: drop-shadow(var(--shadow-stage));
+}
+
+.game-layout-hudless .game-stage {
+  width: min(var(--menu-stage-size), calc(100vw - 48px), calc(100vh - 48px));
+}
+
+.svg-stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.company-logo {
+  pointer-events: none;
+  flex: 0 0 auto;
+}
+
+.company-logo-mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.16));
+}
+
+.company-logo-menu {
+  width: clamp(240px, 28vw, 340px);
+  height: clamp(240px, 28vw, 340px);
+  margin-bottom: clamp(14px, 1.8vmin, 24px);
+}
+
+.company-logo-stage {
+  width: clamp(168px, 18vw, 260px);
+  height: clamp(56px, 6vw, 86px);
+  opacity: 0.92;
+}
+
+.fullscreen-button {
+  position: fixed;
+  right: clamp(20px, 3vw, 48px);
+  bottom: clamp(20px, 3vw, 48px);
+  z-index: 8;
+  width: clamp(48px, 3.8vw, 72px);
+  height: clamp(48px, 3.8vw, 72px);
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(51, 214, 255, 0.52);
+  border-radius: 8px;
+  background: rgba(16, 19, 26, 0.82);
+  color: var(--color-text);
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgba(255, 216, 77, 0.12),
+    0 10px 24px rgba(0, 0, 0, 0.32);
+}
+
+.fullscreen-button svg {
+  width: 58%;
+  height: 58%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.1;
+}
+
+.fullscreen-button:hover,
+.fullscreen-button:focus-visible {
+  border-color: var(--color-yellow);
+  background: rgba(255, 216, 77, 0.16);
+  color: var(--color-yellow);
+  outline: none;
+}
+
+.fullscreen-button-active {
+  border-color: rgba(94, 224, 132, 0.72);
+  background: rgba(94, 224, 132, 0.14);
+}
+
+.godmode-biome-panel {
+  position: fixed;
+  top: clamp(130px, 18vh, 210px);
+  right: clamp(72px, 5vw, 112px);
+  z-index: 7;
+  width: min(300px, calc(100vw - 48px));
+  max-height: min(720px, calc(100vh - 150px));
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(255, 216, 77, 0.64);
+  border-radius: 8px;
+  padding: 14px;
+  background:
+    linear-gradient(90deg, rgba(255, 216, 77, 0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(51, 214, 255, 0.05) 1px, transparent 1px),
+    rgba(7, 8, 13, 0.88);
+  background-size: 24px 24px;
+  box-shadow:
+    0 0 0 1px rgba(51, 214, 255, 0.1),
+    0 18px 36px rgba(0, 0, 0, 0.36);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: rgba(255, 216, 77, 0.72) rgba(16, 19, 26, 0.68);
+  scrollbar-width: thin;
+}
+
+.godmode-biome-panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.godmode-biome-panel::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(16, 19, 26, 0.68);
+}
+
+.godmode-biome-panel::-webkit-scrollbar-thumb {
+  border: 3px solid rgba(7, 8, 13, 0.88);
+  border-radius: 999px;
+  background: rgba(255, 216, 77, 0.84);
+}
+
+.godmode-biome-header {
+  display: grid;
+  gap: 4px;
+}
+
+.godmode-biome-kicker,
+.godmode-biome-title,
+.godmode-biome-option,
+.godmode-biome-reroll {
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.godmode-biome-kicker {
+  color: #5ee084;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.godmode-biome-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.08rem;
+  text-transform: uppercase;
+}
+
+.godmode-biome-options {
+  display: grid;
+  gap: 8px;
+}
+
+.godmode-biome-option,
+.godmode-biome-reroll {
+  width: 100%;
+  border: 1px solid rgba(51, 214, 255, 0.38);
+  border-radius: 6px;
+  background: rgba(16, 19, 26, 0.76);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.godmode-biome-option {
+  min-height: 58px;
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+}
+
+.godmode-biome-option-active {
+  border-color: rgba(94, 224, 132, 0.74);
+  background: rgba(94, 224, 132, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(94, 224, 132, 0.18);
+}
+
+.godmode-biome-option-label {
+  color: var(--color-text);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+.godmode-biome-option-description {
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  line-height: 1.2;
+}
+
+.godmode-biome-reroll {
+  min-height: 40px;
+  border-color: rgba(255, 216, 77, 0.54);
+  padding: 9px 10px;
+  background: rgba(255, 216, 77, 0.11);
+  font-size: 0.76rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.godmode-level-panel {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 216, 77, 0.18);
+  padding-top: 10px;
+}
+
+.godmode-level-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.godmode-level-title,
+.godmode-level-status,
+.godmode-level-action {
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.godmode-level-title {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.godmode-level-status {
+  color: var(--color-yellow);
+  font-size: 0.76rem;
+}
+
+.godmode-level-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.godmode-level-action {
+  min-width: 0;
+  min-height: 38px;
+  border: 1px solid rgba(51, 214, 255, 0.44);
+  border-radius: 6px;
+  padding: 8px 6px;
+  background: rgba(51, 214, 255, 0.1);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.72rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.godmode-biome-option:hover,
+.godmode-biome-option:focus-visible,
+.godmode-biome-reroll:hover,
+.godmode-biome-reroll:focus-visible,
+.godmode-level-action:hover,
+.godmode-level-action:focus-visible {
+  border-color: var(--color-yellow);
+  background: rgba(255, 216, 77, 0.18);
+  outline: none;
+}
+
+.godmode-level-action:disabled,
+.godmode-level-action:disabled:hover {
+  border-color: rgba(156, 168, 186, 0.26);
+  background: rgba(156, 168, 186, 0.08);
+  color: rgba(156, 168, 186, 0.52);
+  cursor: default;
+}
+
+.board-bg {
+  fill: #dcead2;
+  stroke: #adc89b;
+  stroke-width: 3;
+}
+
+.board-floor {
+  fill: #f7f3e8;
+  stroke: #d6cdbb;
+  stroke-width: 0.7;
+}
+
+.board-floor-zone-center {
+  fill: #f0f2f4;
+  stroke: #c4ccd4;
+}
+
+.board-floor-zone-suburbs {
+  fill: #fff2d9;
+  stroke: #dcc294;
+}
+
+.board-floor-zone-park {
+  fill: #eaf5d6;
+  stroke: #b4d293;
+}
+
+.board-floor-zone-water {
+  fill: #e6f7fb;
+  stroke: #91d2e6;
+}
+
+.board-floor-playerSpawn {
+  fill: #efe3b6;
+  stroke: #d2b95e;
+  stroke-width: 1;
+}
+
+.board-floor-ghostSpawn {
+  fill: #f0d6c8;
+  stroke: #d2a08d;
+  stroke-width: 1;
+}
+
+.city-block-shadow {
+  fill: rgba(92, 78, 57, 0.14);
+}
+
+.city-building-base,
+.city-green-base,
+.city-water-base {
+  stroke-linejoin: round;
+  stroke-width: 1;
+}
+
+.city-building-base {
+  stroke: #b8977a;
+}
+
+.city-biome-center .city-building-base {
+  fill: #c6cbd0;
+  stroke: #8d9aa6;
+}
+
+.city-biome-center.city-block-tone-1 .city-building-base {
+  fill: #d2c7be;
+}
+
+.city-biome-center.city-block-tone-2 .city-building-base {
+  fill: #bec8d2;
+}
+
+.city-biome-center.city-block-tone-3 .city-building-base {
+  fill: #d4d0c4;
+}
+
+.city-biome-suburbs .city-building-base {
+  fill: #d6bca5;
+}
+
+.city-biome-suburbs.city-block-tone-1 .city-building-base {
+  fill: #e0c8ad;
+}
+
+.city-biome-suburbs.city-block-tone-2 .city-building-base {
+  fill: #cfb49b;
+}
+
+.city-biome-suburbs.city-block-tone-3 .city-building-base {
+  fill: #e8d3bd;
+}
+
+.city-building-roof {
+  fill: #c78b61;
+  stroke: #a36d49;
+  stroke-linejoin: round;
+  stroke-width: 0.8;
+}
+
+.city-building-face,
+.city-row-house-face {
+  fill: rgba(255, 244, 225, 0.44);
+}
+
+.city-row-house-roof,
+.city-building-civic-roof {
+  fill: #c78b61;
+  stroke: #a36d49;
+  stroke-linejoin: round;
+  stroke-width: 0.8;
+}
+
+.city-building-tower-main,
+.city-building-office-main,
+.city-building-apartment-main,
+.city-building-civic-main {
+  stroke: rgba(92, 106, 116, 0.5);
+  stroke-linejoin: round;
+  stroke-width: 0.8;
+}
+
+.city-building-tower-main {
+  fill: #a9b8c5;
+}
+
+.city-building-office-main,
+.city-building-office-top {
+  fill: #b7c4cf;
+}
+
+.city-building-apartment-main {
+  fill: #c4b7aa;
+}
+
+.city-building-civic-main {
+  fill: #cfbf9e;
+}
+
+.city-building-roof-flat {
+  fill: #8d9aa6;
+}
+
+.city-building-column {
+  fill: rgba(255, 244, 225, 0.64);
+}
+
+.city-building-window {
+  fill: #8fbfd5;
+  stroke: rgba(70, 111, 131, 0.35);
+  stroke-width: 0.4;
+}
+
+.city-building-door {
+  fill: #946a4d;
+}
+
+.city-green-base {
+  fill: #b8dc99;
+  stroke: #85b66b;
+}
+
+.city-tree-trunk {
+  fill: #8d673f;
+}
+
+.city-tree-canopy {
+  fill: #5da85a;
+}
+
+.city-tree-canopy-light {
+  fill: rgba(190, 225, 139, 0.72);
+}
+
+.city-water-base {
+  fill: #a7d9f2;
+  stroke: #78b6d6;
+}
+
+.city-water-wave {
+  fill: none;
+  stroke: #4f99bd;
+  stroke-linecap: round;
+  stroke-width: 1.2;
+}
+
+.stage-banner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  min-width: 148px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 216, 77, 0.7);
+  border-radius: 8px;
+  padding: 9px 18px;
+  background: rgba(7, 8, 13, 0.86);
+  color: var(--color-yellow);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.stage-banner-level {
+  display: grid;
+  gap: 5px;
+  min-width: min(280px, 78%);
+}
+
+.stage-banner-level-name {
+  color: var(--color-text);
+  font-size: 0.72rem;
+  line-height: 1.15;
+  text-transform: none;
+}
+
+.stage-banner-status {
+  color: var(--color-yellow);
+}
+
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7, 8, 13, 0.58);
+  z-index: 4;
+}
+
+.game-overlay-panel {
+  min-width: 180px;
+  max-width: min(320px, calc(100vw - 48px));
+  border: 1px solid rgba(255, 216, 77, 0.75);
+  border-radius: 8px;
+  padding: 18px 22px;
+  background: rgba(7, 8, 13, 0.92);
+  text-align: center;
+}
+
+.main-menu-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 5vw, 44px);
+  background:
+    radial-gradient(circle at 50% 40%, rgba(21, 35, 61, 0.96), rgba(7, 8, 13, 0.96) 64%),
+    rgba(7, 8, 13, 0.96);
+  overflow: hidden;
+  text-align: center;
+}
+
+.main-menu-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.main-menu-backdrop::after {
+  display: none;
+}
+
+.main-menu-backdrop-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.main-menu-chase {
+  filter: none;
+  opacity: 1;
+}
+
+.main-menu-backdrop .player-globe {
+  filter: none;
+}
+
+.main-menu-chase-player {
+  opacity: 1;
+}
+
+.main-menu-panel .game-overlay-actions {
+  width: min(420px, 100%);
+}
+
+.main-menu-panel .ranking-list {
+  width: min(420px, 100%);
+  max-height: min(260px, 36vh);
+}
+
+.main-menu-panel .menu-ranking-form {
+  width: min(420px, 100%);
+}
+
+.menu-ranking-form .game-overlay-actions {
+  width: 100%;
+  gap: 12px;
+}
+
+.menu-ranking-form .game-overlay-action {
+  width: 100%;
+  min-height: 46px;
+}
+
+.main-menu-panel:not(.main-menu-panel-main) .company-logo-menu {
+  width: clamp(128px, 14vmin, 180px);
+  height: clamp(128px, 14vmin, 180px);
+  margin-bottom: clamp(8px, 1vmin, 14px);
+}
+
+.main-menu-panel-settings {
+  justify-content: flex-start;
+}
+
+.main-menu-panel:not(.main-menu-panel-main) {
+  overflow: hidden;
+}
+
+.main-menu-panel.main-menu-panel-settings {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: rgba(255, 216, 77, 0.78) rgba(16, 19, 26, 0.68);
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.main-menu-panel-scores {
+  overflow: auto;
+}
+
+.main-menu-panel.main-menu-panel-settings::-webkit-scrollbar {
+  width: 12px;
+}
+
+.main-menu-panel.main-menu-panel-settings::-webkit-scrollbar-track {
+  border-left: 1px solid rgba(51, 214, 255, 0.12);
+  border-radius: 999px;
+  margin-block: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 216, 77, 0.1), rgba(51, 214, 255, 0.08)),
+    rgba(16, 19, 26, 0.68);
+}
+
+.main-menu-panel.main-menu-panel-settings::-webkit-scrollbar-thumb {
+  border: 3px solid rgba(7, 8, 13, 0.96);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 216, 77, 0.94), rgba(51, 214, 255, 0.76)),
+    var(--color-yellow);
+  box-shadow:
+    0 0 0 1px rgba(255, 216, 77, 0.24),
+    0 0 14px rgba(51, 214, 255, 0.22);
+}
+
+.main-menu-panel.main-menu-panel-settings::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 236, 132, 0.98), rgba(94, 224, 132, 0.78)),
+    var(--color-yellow);
+}
+
+.main-menu-panel.main-menu-panel-settings::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.main-menu-panel-tutorial {
+  justify-content: center;
+  gap: 0;
+  padding-block: clamp(14px, 3vh, 28px);
+  overflow: hidden;
+  scrollbar-width: none;
+}
+
+.main-menu-panel-tutorial::-webkit-scrollbar {
+  display: none;
+}
+
+.main-menu-panel-tutorial .company-logo-menu {
+  width: clamp(112px, 12vmin, 160px);
+  height: clamp(112px, 12vmin, 160px);
+  margin-bottom: 4px;
+}
+
+.main-menu-panel-tutorial .game-overlay-label {
+  font-size: 0.86rem;
+}
+
+.main-menu-panel-tutorial .game-overlay-score {
+  margin-top: 6px;
+  font-size: 1.32rem;
+}
+
+.tutorial-panel {
+  width: min(520px, 100%);
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.tutorial-progress {
+  color: var(--color-yellow);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tutorial-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.tutorial-text {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.tutorial-visual {
+  min-height: 106px;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  border: 1px solid rgba(51, 214, 255, 0.28);
+  border-radius: 8px;
+  padding: 10px;
+  background:
+    linear-gradient(90deg, rgba(255, 216, 77, 0.06) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(51, 214, 255, 0.06) 1px, transparent 1px), rgba(16, 19, 26, 0.64);
+  background-size: 24px 24px;
+}
+
+.tutorial-controls-visual {
+  grid-template-columns: auto auto minmax(82px, 1fr);
+  column-gap: 14px;
+}
+
+.tutorial-collectibles-visual {
+  place-items: center;
+}
+
+.tutorial-collectible-items {
+  width: min(340px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 12px;
+}
+
+.tutorial-collectible-item {
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.tutorial-collectible-icon {
+  display: block;
+  width: 64px;
+  height: 64px;
+  overflow: visible;
+}
+
+.tutorial-collectible-label {
+  color: var(--color-text-muted);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tutorial-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 32px);
+  gap: 6px;
+}
+
+.tutorial-key {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 216, 77, 0.62);
+  border-radius: 6px;
+  background: rgba(255, 216, 77, 0.12);
+  color: var(--color-text);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tutorial-keypad-wasd .tutorial-key {
+  border-color: rgba(51, 214, 255, 0.62);
+  background: rgba(51, 214, 255, 0.12);
+}
+
+.tutorial-key-spacer {
+  visibility: hidden;
+}
+
+.tutorial-visual-svg {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+}
+
+.tutorial-costs-svg {
+  max-width: 220px;
+}
+
+.tutorial-route {
+  fill: none;
+  stroke: rgba(255, 216, 77, 0.74);
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.tutorial-route-arrow {
+  fill: none;
+  stroke: rgba(255, 216, 77, 0.74);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.tutorial-visual-labels {
+  width: min(260px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tutorial-visual-labels-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.game-over-panel {
+  width: min(420px, calc(100vw - 48px));
+  max-width: min(420px, calc(100vw - 48px));
+}
+
+.game-over-result-panel {
+  display: grid;
+  justify-items: center;
+}
+
+.game-overlay-label {
+  display: block;
+  color: var(--color-yellow);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.game-overlay-score {
+  display: block;
+  margin-top: 10px;
+  color: var(--color-text);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.game-overlay-level-name {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-text);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.game-over-final-score {
+  color: var(--color-yellow);
+  font-size: 2.1rem;
+}
+
+.game-overlay-note {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-text-muted);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.game-overlay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.tutorial-actions {
+  margin-top: 12px;
+}
+
+.tutorial-action-back {
+  order: 0;
+}
+
+.tutorial-action-forward {
+  order: 1;
+}
+
+.game-overlay-actions-column {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+.settings-file {
+  width: min(420px, 100%);
+  display: grid;
+  gap: 5px;
+  margin-top: 14px;
+  text-align: left;
+}
+
+.settings-file-label {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.settings-file-path,
+.settings-file-status {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-file-status {
+  color: var(--color-text-muted);
+}
+
+.settings-godmode,
+.settings-timemode,
+.scores-clear-form {
+  width: min(420px, 100%);
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  text-align: left;
+}
+
+.settings-volume-panel {
+  width: min(420px, 100%);
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  text-align: left;
+}
+
+.settings-volume-control {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+  color: var(--color-text-muted);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.settings-volume-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-volume-value {
+  color: var(--color-yellow);
+}
+
+.settings-volume-slider {
+  width: 100%;
+  height: 28px;
+  accent-color: #5ee084;
+}
+
+.settings-godmode-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-godmode-on,
+.settings-godmode-off {
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.settings-godmode-on {
+  color: #5ee084;
+}
+
+.settings-godmode-off {
+  color: var(--color-text-muted);
+}
+
+.settings-godmode-input {
+  width: 100%;
+}
+
+.settings-godmode .game-overlay-action,
+.settings-timemode .game-overlay-action,
+.scores-clear-form .game-overlay-action {
+  width: 100%;
+  margin-top: 2px;
+}
+
+.settings-time-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.settings-time-limit {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  color: var(--color-text-muted);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.settings-time-input {
+  width: 100%;
+  padding-inline: 4px;
+  text-align: center;
+}
+
+.game-overlay-action {
+  min-width: 136px;
+  min-height: 46px;
+  border: 1px solid rgba(255, 216, 77, 0.62);
+  border-radius: 6px;
+  padding: 12px 18px;
+  background: rgba(255, 216, 77, 0.12);
+  color: var(--color-text);
+  cursor: pointer;
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.game-overlay-action-primary {
+  border-color: rgba(94, 224, 132, 0.72);
+  background: rgba(94, 224, 132, 0.14);
+}
+
+.game-overlay-action-secondary {
+  border-color: rgba(51, 214, 255, 0.58);
+  background: rgba(51, 214, 255, 0.1);
+}
+
+.game-overlay-action:hover,
+.game-overlay-action:focus-visible {
+  border-color: var(--color-yellow);
+  background: rgba(255, 216, 77, 0.22);
+  outline: none;
+}
+
+.game-overlay-action:disabled,
+.game-overlay-action:disabled:hover {
+  border-color: rgba(156, 168, 186, 0.28);
+  background: rgba(156, 168, 186, 0.1);
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.ranking-form {
+  margin-top: 14px;
+  text-align: left;
+}
+
+.ranking-label {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.ranking-label-secondary {
+  margin-top: 9px;
+}
+
+.ranking-form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.ranking-form-row-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ranking-input {
+  min-height: 44px;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 11px 12px;
+  background: rgba(16, 19, 26, 0.92);
+  color: var(--color-text);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.ranking-input:focus-visible {
+  border-color: var(--color-yellow);
+  outline: none;
+}
+
+.ranking-submit {
+  min-width: 82px;
+}
+
+.game-over-summary {
+  display: grid;
+  gap: 4px;
+}
+
+.game-over-player {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.game-over-phone {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+}
+
+.game-over-result {
+  width: min(280px, 100%);
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+}
+
+.game-over-result-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 7px;
+}
+
+.game-over-result-row dt,
+.game-over-result-row dd {
+  min-width: 0;
+  margin: 0;
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.game-over-result-row dt {
+  color: var(--color-text-muted);
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.game-over-result-row dd {
+  overflow: hidden;
+  color: var(--color-text);
+  text-align: right;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.ranking-list {
+  display: grid;
+  gap: 5px;
+  max-height: 188px;
+  margin-top: 14px;
+  padding: 0;
+  overflow: auto;
+}
+
+.ranking-entry {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 42px 68px;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  border: 1px solid rgba(41, 48, 65, 0.72);
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: rgba(16, 19, 26, 0.68);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.1;
+}
+
+.ranking-position,
+.ranking-level {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.ranking-player {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.ranking-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ranking-phone {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking-score {
+  color: var(--color-yellow);
+  font-weight: 700;
+  text-align: right;
+}
+
+.ranking-empty {
+  margin-top: 14px;
+  color: var(--color-text-muted);
+  font-family: Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.main-menu-panel .game-overlay-label {
+  font-size: clamp(1rem, 1.35vmin, 1.25rem);
+}
+
+.main-menu-panel .game-overlay-score {
+  font-size: clamp(1.45rem, 2.2vmin, 2.2rem);
+}
+
+.main-menu-panel .game-overlay-action {
+  min-height: clamp(46px, 4.8vmin, 58px);
+  font-size: clamp(1rem, 1.45vmin, 1.2rem);
+}
+
+.main-menu-panel .ranking-input {
+  font-size: clamp(1rem, 1.3vmin, 1.15rem);
+}
+
+.main-menu-panel .ranking-label,
+.main-menu-panel .settings-file-label,
+.main-menu-panel .settings-volume-control,
+.main-menu-panel .settings-godmode-on,
+.main-menu-panel .settings-godmode-off,
+.main-menu-panel .settings-time-limit,
+.main-menu-panel .settings-file-path,
+.main-menu-panel .settings-file-status,
+.main-menu-panel .tutorial-progress,
+.main-menu-panel .tutorial-text,
+.main-menu-panel .tutorial-collectible-label,
+.main-menu-panel .tutorial-visual-labels,
+.main-menu-panel .ranking-empty {
+  font-size: clamp(0.78rem, 1.05vmin, 0.95rem);
+}
+
+.main-menu-panel .tutorial-title {
+  font-size: clamp(1.05rem, 1.45vmin, 1.35rem);
+}
+
+@media (min-width: 1200px) and (min-height: 800px) {
+  .game-shell {
+    padding: 32px;
+    background-size: 64px 64px;
+  }
+
+  .game-layout {
+    max-width: 1280px;
+    min-height: calc(100vh - 64px);
+  }
+
+  .game-layout-hudless .game-stage {
+    width: min(var(--menu-stage-size), calc(100vw - 64px), calc(100vh - 64px));
+  }
+
+  .game-hud {
+    gap: 20px;
+    padding-bottom: 16px;
+  }
+
+  .hud-score,
+  .hud-level,
+  .hud-lives,
+  .hud-timer {
+    min-height: 54px;
+  }
+
+  .hud-score-label {
+    font-size: 0.86rem;
+  }
+
+  .hud-score-value,
+  .hud-heart {
+    font-size: 1.75rem;
+  }
+
+  .hud-level-value {
+    font-size: 1.18rem;
+  }
+
+  .hud-timer-value {
+    font-size: 1.55rem;
+  }
+
+  .game-slogan {
+    max-width: min(860px, 100%);
+    font-size: clamp(1.35rem, 1.55vmin, 2rem);
+  }
+
+  .main-menu-panel {
+    padding: clamp(40px, 5vmin, 72px);
+  }
+
+  .main-menu-panel-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    justify-items: center;
+    column-gap: 36px;
+    row-gap: 8px;
+    padding: clamp(28px, 3vmin, 48px);
+  }
+
+  .main-menu-panel-settings > .company-logo-menu,
+  .main-menu-panel-settings > .game-overlay-label,
+  .main-menu-panel-settings > .game-overlay-score {
+    grid-column: 1 / -1;
+  }
+
+  .main-menu-panel-settings > .game-overlay-score,
+  .main-menu-panel-settings > .settings-file,
+  .main-menu-panel-settings > .settings-volume-panel,
+  .main-menu-panel-settings > .settings-godmode,
+  .main-menu-panel-settings > .settings-timemode,
+  .main-menu-panel-settings > .game-overlay-actions {
+    margin-top: 0;
+  }
+
+  .main-menu-panel-settings .company-logo-menu {
+    width: clamp(112px, 12vmin, 150px);
+    height: clamp(112px, 12vmin, 150px);
+  }
+
+  .main-menu-panel-main .company-logo-menu {
+    width: clamp(320px, 30vmin, 420px);
+    height: clamp(320px, 30vmin, 420px);
+  }
+
+  .main-menu-panel .game-overlay-actions,
+  .main-menu-panel .menu-ranking-form,
+  .settings-file,
+  .settings-godmode,
+  .settings-timemode,
+  .settings-volume-panel,
+  .scores-clear-form {
+    width: min(480px, 100%);
+  }
+
+  .main-menu-panel .game-overlay-actions {
+    gap: 14px;
+  }
+
+  .main-menu-panel .game-overlay-action {
+    min-height: clamp(58px, 5.5vmin, 72px);
+    padding-inline: 22px;
+    font-size: clamp(1.15rem, 1.6vmin, 1.35rem);
+  }
+
+  .main-menu-panel-settings .game-overlay-action {
+    min-height: clamp(52px, 5vmin, 64px);
+  }
+
+  .main-menu-panel .ranking-input {
+    min-height: 52px;
+    padding: 13px 14px;
+  }
+
+  .main-menu-panel-settings .ranking-input {
+    min-height: 48px;
+    padding: 11px 12px;
+  }
+
+  .tutorial-panel {
+    width: min(620px, 100%);
+    gap: 12px;
+  }
+
+  .tutorial-visual {
+    min-height: clamp(130px, 14vmin, 190px);
+  }
+
+  .tutorial-keypad {
+    grid-template-columns: repeat(3, 40px);
+    gap: 8px;
+  }
+
+  .tutorial-key {
+    width: 40px;
+    height: 40px;
+    font-size: 1.08rem;
+  }
+
+  .tutorial-collectible-icon {
+    width: 76px;
+    height: 76px;
+  }
+
+  .settings-time-grid {
+    gap: 8px;
+  }
+
+  .settings-volume-slider {
+    height: 44px;
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-menu-backdrop {
+    display: none;
+  }
+}
+
+@media (max-width: 1480px) {
+  .godmode-biome-panel {
+    position: static;
+    justify-self: center;
+    width: min(420px, 100%);
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    overflow: auto hidden;
+  }
+
+  .game-shell {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .game-layout {
+    max-width: 100%;
+    min-width: 0;
+    min-height: calc(100vh - 32px);
+    gap: 16px;
+  }
+
+  .game-hud {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .hud-status {
+    gap: 6px;
+  }
+
+  .game-stage {
+    width: min(100%, calc(100vw - 32px));
+  }
+
+  .godmode-biome-panel {
+    position: static;
+    width: min(420px, 100%);
+    margin: 0 auto;
+  }
+
+  .game-overlay-panel {
+    max-width: min(300px, calc(100% - 24px));
+    padding: 16px;
+  }
+
+  .main-menu-panel {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    padding: 16px;
+  }
+
+  .company-logo-menu {
+    width: clamp(160px, 46vw, 240px);
+    height: clamp(160px, 46vw, 240px);
+  }
+
+  .main-menu-panel:not(.main-menu-panel-main) .company-logo-menu,
+  .main-menu-panel-tutorial .company-logo-menu {
+    width: clamp(80px, 24vw, 116px);
+    height: clamp(80px, 24vw, 116px);
+  }
+
+  .game-overlay-action {
+    min-width: 112px;
+    min-height: 40px;
+    padding: 9px 12px;
+    font-size: 0.82rem;
+  }
+
+  .ranking-input {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .hud-score {
+    padding-inline: 10px;
+  }
+
+  .hud-level {
+    order: 3;
+    flex-basis: 100%;
+    min-height: 34px;
+    padding: 7px 10px;
+  }
+
+  .hud-score-label {
+    display: none;
+  }
+
+  .hud-score-value,
+  .hud-level-value,
+  .hud-heart,
+  .hud-timer-value {
+    font-size: 1.12rem;
+  }
+
+  .hud-lives {
+    gap: 4px;
+    padding-inline: 10px;
+  }
+
+  .hud-timer {
+    gap: 6px;
+    padding-inline: 10px;
+  }
+
+  .ranking-entry {
+    grid-template-columns: 28px minmax(0, 1fr) 36px 58px;
+    gap: 6px;
+    padding-inline: 6px;
+  }
+}

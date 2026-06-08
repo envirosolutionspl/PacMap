@@ -1,0 +1,283 @@
+.pellet-dot {
+  fill: #fff6bd;
+  stroke: #87682e;
+  stroke-width: 0.8;
+  filter: drop-shadow(0 0 2px rgba(135, 104, 46, 0.45));
+}
+
+.bonus-map {
+  filter: drop-shadow(0 0 5px rgba(51, 214, 255, 0.38));
+}
+
+.bonus-map-panel {
+  stroke: rgba(7, 17, 31, 0.72);
+  stroke-linejoin: round;
+  stroke-width: 1;
+}
+
+.bonus-map-panel-left {
+  fill: #2fb8a6;
+}
+
+.bonus-map-panel-mid {
+  fill: #3fc9a8;
+}
+
+.bonus-map-panel-right {
+  fill: #2aa894;
+}
+
+.bonus-map-route {
+  fill: none;
+  stroke: #ffd15c;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.35;
+}
+
+.bonus-map-pin {
+  fill: #ff5a3c;
+  stroke: rgba(7, 17, 31, 0.72);
+  stroke-linejoin: round;
+  stroke-width: 0.8;
+}
+
+.bonus-map-pin-hole {
+  fill: #f8fafc;
+}
+
+.power-qgis {
+  filter: drop-shadow(0 0 7px rgba(116, 170, 40, 0.68));
+}
+
+.power-qgis-halo {
+  fill: rgba(116, 170, 40, 0.12);
+  stroke: rgba(116, 170, 40, 0.42);
+  stroke-width: 1;
+}
+
+.power-qgis-ring {
+  fill: rgb(92, 152, 49);
+}
+
+.power-qgis-cube-front {
+  fill: rgb(238, 121, 19);
+}
+
+.power-qgis-cube-side {
+  fill: rgb(240, 230, 74);
+}
+
+.power-qgis-tail {
+  fill: rgb(92, 152, 49);
+}
+
+.player-globe {
+  filter: drop-shadow(0 0 6px rgba(51, 214, 255, 0.45));
+}
+
+.player-ocean {
+  fill: #62cfff;
+}
+
+.player-land {
+  fill: #9fd66c;
+  stroke: rgba(18, 64, 31, 0.35);
+  stroke-linejoin: round;
+  stroke-width: 0.7;
+}
+
+.player-eye {
+  fill: #07111f;
+}
+
+.player-globe-outline,
+.player-mouth-edge {
+  fill: none;
+  stroke: #07111f;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.player-sprite-ready .player-globe {
+  filter: drop-shadow(0 0 3px rgba(51, 214, 255, 0.34));
+}
+
+.money-bag {
+  filter: drop-shadow(0 0 5px rgba(255, 216, 77, 0.34));
+}
+
+.money-bag-body,
+.money-bag-neck {
+  fill: #b78368;
+  stroke: rgba(7, 17, 31, 0.88);
+  stroke-linejoin: round;
+  stroke-width: 1.35;
+}
+
+.money-bag-highlight {
+  fill: rgba(255, 244, 220, 0.18);
+}
+
+.money-bag-band {
+  fill: var(--color-yellow);
+  stroke: rgba(7, 17, 31, 0.88);
+  stroke-linejoin: round;
+  stroke-width: 1.1;
+}
+
+.money-bag-string {
+  fill: none;
+  stroke: var(--color-yellow);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.4;
+}
+
+.money-bag-knot {
+  fill: var(--color-yellow);
+}
+
+.money-bag-eye {
+  fill: #f8fafc;
+  stroke: rgba(7, 17, 31, 0.82);
+  stroke-width: 0.55;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.money-bag-pupil {
+  fill: #07111f;
+}
+
+.ghost-type-randomGhost .money-bag-body,
+.ghost-type-randomGhost .money-bag-neck {
+  fill: #b78368;
+}
+
+.ghost-type-chaserGhost .money-bag-body,
+.ghost-type-chaserGhost .money-bag-neck {
+  fill: #d16454;
+}
+
+.ghost-type-chaserGhost .money-bag {
+  filter: drop-shadow(0 0 6px rgba(209, 100, 84, 0.5));
+}
+
+.ghost-type-ambusherGhost .money-bag-body,
+.ghost-type-ambusherGhost .money-bag-neck {
+  fill: #8f74c7;
+}
+
+.ghost-type-ambusherGhost .money-bag {
+  filter: drop-shadow(0 0 6px rgba(143, 116, 199, 0.52));
+}
+
+.ghost-type-wandererGhost .money-bag-body,
+.ghost-type-wandererGhost .money-bag-neck {
+  fill: #4ea9b8;
+}
+
+.ghost-type-wandererGhost .money-bag {
+  filter: drop-shadow(0 0 6px rgba(78, 169, 184, 0.5));
+}
+
+.ghost-skin-ghost-neon.sprite-state-normal .money-bag-body,
+.ghost-skin-ghost-neon.sprite-state-normal .money-bag-neck {
+  fill: #24c6d2;
+  stroke: rgba(247, 255, 128, 0.74);
+}
+
+.ghost-skin-ghost-neon.ghost-type-chaserGhost .money-bag-body,
+.ghost-skin-ghost-neon.ghost-type-chaserGhost .money-bag-neck {
+  fill: #d65ad8;
+}
+
+.ghost-skin-ghost-neon.ghost-type-ambusherGhost .money-bag-body,
+.ghost-skin-ghost-neon.ghost-type-ambusherGhost .money-bag-neck {
+  fill: #d6c149;
+}
+
+.ghost-skin-ghost-neon.ghost-type-wandererGhost .money-bag-body,
+.ghost-skin-ghost-neon.ghost-type-wandererGhost .money-bag-neck {
+  fill: #54c678;
+}
+
+.ghost-skin-ghost-neon .money-bag {
+  filter: drop-shadow(0 0 8px rgba(36, 240, 255, 0.62));
+}
+
+.ghost-skin-ghost-neon .money-bag-band,
+.ghost-skin-ghost-neon .money-bag-string,
+.ghost-skin-ghost-neon .money-bag-knot {
+  stroke: #ffe156;
+  fill: #ffe156;
+}
+
+.ghost-sprite-frightened .money-bag-body,
+.ghost-sprite-frightened .money-bag-neck {
+  fill: #e53935;
+  stroke: rgba(255, 255, 255, 0.44);
+}
+
+.ghost-sprite-frightened .money-bag {
+  filter: drop-shadow(0 0 7px rgba(229, 57, 53, 0.72));
+}
+
+.ghost-sprite-frightened .money-bag-eye {
+  fill: #f4f7ff;
+}
+
+.ghost-sprite-frightened .money-bag-pupil {
+  fill: #111827;
+}
+
+.ghost-sprite-eaten,
+.ghost-sprite-respawning {
+  opacity: 0.6;
+}
+
+.ghost-sprite-eaten .money-bag-body,
+.ghost-sprite-eaten .money-bag-neck,
+.ghost-sprite-respawning .money-bag-body,
+.ghost-sprite-respawning .money-bag-neck {
+  fill: transparent;
+  stroke: rgba(244, 247, 255, 0.22);
+  filter: none;
+}
+
+.ghost-sprite-eaten .money-bag-highlight,
+.ghost-sprite-eaten .money-bag-band,
+.ghost-sprite-eaten .money-bag-string,
+.ghost-sprite-eaten .money-bag-knot,
+.ghost-sprite-respawning .money-bag-highlight,
+.ghost-sprite-respawning .money-bag-band,
+.ghost-sprite-respawning .money-bag-string,
+.ghost-sprite-respawning .money-bag-knot {
+  opacity: 0.18;
+}
+
+.ghost-sprite-eaten .money-bag-eye,
+.ghost-sprite-respawning .money-bag-eye {
+  fill: #f4f7ff;
+}
+
+.ghost-sprite-eaten .money-bag-pupil,
+.ghost-sprite-respawning .money-bag-pupil {
+  fill: #e53935;
+}
+
+.ghost-skin-ghost-neon.sprite-state-eaten .money-bag-body,
+.ghost-skin-ghost-neon.sprite-state-eaten .money-bag-neck,
+.ghost-skin-ghost-neon.sprite-state-respawning .money-bag-body,
+.ghost-skin-ghost-neon.sprite-state-respawning .money-bag-neck {
+  fill: transparent;
+  stroke: rgba(36, 240, 255, 0.35);
+  filter: none;
+}
+
+.ghost-skin-ghost-neon.sprite-state-eaten .money-bag-pupil,
+.ghost-skin-ghost-neon.sprite-state-respawning .money-bag-pupil {
+  fill: #24f0ff;
+}

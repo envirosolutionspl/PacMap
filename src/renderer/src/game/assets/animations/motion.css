@@ -1,0 +1,198 @@
+.animated-svg-sprite {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.player-sprite,
+.ghost-sprite {
+  will-change: transform;
+}
+
+.money-bag,
+.money-bag-eye,
+.bonus-map-art,
+.power-qgis-art,
+.power-qgis-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hud-value-pulse {
+  animation: hud-value-pop 0.22s ease-out;
+}
+
+.stage-banner {
+  animation: stage-banner-pop 0.18s ease-out;
+}
+
+.game-overlay {
+  animation: overlay-fade-in 0.18s ease-out;
+}
+
+.game-overlay-panel {
+  animation: overlay-panel-pop 0.2s ease-out;
+}
+
+.ghost-sprite-moving .money-bag {
+  animation: money-bag-float 0.78s ease-in-out infinite alternate;
+}
+
+.ghost-sprite-moving .money-bag-eye {
+  animation: money-bag-eye-blink 2.8s ease-in-out infinite;
+}
+
+.bonus-map-art {
+  animation: bonus-map-pop 1.6s ease-in-out infinite;
+}
+
+.ghost-sprite-frightened .money-bag-body,
+.ghost-sprite-frightened .money-bag-neck,
+.sprite-state-frightened .money-bag-body,
+.sprite-state-frightened .money-bag-neck {
+  animation: ghost-frightened-pulse 0.7s ease-in-out infinite alternate;
+}
+
+.power-qgis-art {
+  animation: power-pellet-pulse 1.05s ease-in-out infinite;
+}
+
+.power-qgis-halo {
+  animation: power-pellet-ring 1.05s ease-in-out infinite;
+}
+
+@keyframes money-bag-float {
+  from {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  to {
+    transform: translateY(2px) rotate(2deg);
+  }
+}
+
+@keyframes money-bag-eye-blink {
+  0%,
+  88%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  92%,
+  95% {
+    transform: scaleY(0.18);
+  }
+}
+
+@keyframes bonus-map-pop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-1px) scale(1.05);
+  }
+}
+
+@keyframes ghost-frightened-pulse {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.72;
+  }
+}
+
+@keyframes power-pellet-pulse {
+  0%,
+  100% {
+    opacity: 0.82;
+    transform: scale(0.92);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes power-pellet-ring {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(0.86);
+  }
+
+  50% {
+    opacity: 0.52;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes hud-value-pop {
+  0% {
+    opacity: 0.72;
+    transform: translateY(1px) scale(0.98);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(0) scale(1.04);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes stage-banner-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlay-panel-pop {
+  from {
+    transform: translateY(4px) scale(0.98);
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-value-pulse,
+  .stage-banner,
+  .game-overlay,
+  .game-overlay-panel,
+  .money-bag,
+  .money-bag-eye,
+  .bonus-map-art,
+  .ghost-sprite-frightened .money-bag-body,
+  .ghost-sprite-frightened .money-bag-neck,
+  .sprite-state-frightened .money-bag-body,
+  .sprite-state-frightened .money-bag-neck,
+  .power-qgis-art,
+  .power-qgis-halo {
+    animation: none;
+  }
+}
