@@ -342,9 +342,11 @@ describe('StartOverlay keyboard navigation', () => {
     expect(screen.getByText('GodMode enabled')).toBeTruthy()
   })
 
-  it('changes menu and game music volume from settings', () => {
+  it('changes menu music, game music and board scale from settings', () => {
     const onMenuMusicVolumeChange = vi.fn()
     const onGameMusicVolumeChange = vi.fn()
+    const onGameBoardScaleChange = vi.fn()
+    const onIntroOverlayScaleChange = vi.fn()
 
     render(
       <StartOverlay
@@ -361,6 +363,8 @@ describe('StartOverlay keyboard navigation', () => {
         isTimedModeEnabled={false}
         menuMusicVolume={defaultMusicVolume}
         gameMusicVolume={defaultMusicVolume}
+        gameBoardScale={1}
+        introOverlayScale={1}
         timeLimitMinutes={defaultTimeLimitMinutes}
         onStart={noop}
         onPlayerNameChange={noop}
@@ -369,6 +373,8 @@ describe('StartOverlay keyboard navigation', () => {
         onToggleAudio={noop}
         onMenuMusicVolumeChange={onMenuMusicVolumeChange}
         onGameMusicVolumeChange={onGameMusicVolumeChange}
+        onGameBoardScaleChange={onGameBoardScaleChange}
+        onIntroOverlayScaleChange={onIntroOverlayScaleChange}
         onClearRankings={noop}
         onVerifyClearRankingsPassword={verifyGodModePassword}
         onChooseRankingFile={noop}
@@ -386,9 +392,17 @@ describe('StartOverlay keyboard navigation', () => {
     fireEvent.change(screen.getByRole('slider', { name: /Game/ }), {
       target: { value: '30' }
     })
+    fireEvent.change(screen.getByRole('slider', { name: /Board size/ }), {
+      target: { value: '85' }
+    })
+    fireEvent.change(screen.getByRole('slider', { name: /Intro overlay/ }), {
+      target: { value: '250' }
+    })
 
     expect(onMenuMusicVolumeChange).toHaveBeenCalledWith(0.75)
     expect(onGameMusicVolumeChange).toHaveBeenCalledWith(0.3)
+    expect(onGameBoardScaleChange).toHaveBeenCalledWith(0.85)
+    expect(onIntroOverlayScaleChange).toHaveBeenCalledWith(2.5)
   })
 
   it('requires the GodMode password before clearing scores', () => {

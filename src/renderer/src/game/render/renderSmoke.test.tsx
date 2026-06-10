@@ -6,6 +6,7 @@ import { Ghost } from '../entities/Ghost'
 import { Player } from '../entities/Player'
 import { levels } from '../levels'
 import { GameOverOverlay } from './GameOverOverlay'
+import { GameScreen } from './GameScreen'
 import { Hud } from './Hud'
 import { LevelCompleteOverlay } from './LevelCompleteOverlay'
 import { RankingList } from './RankingList'
@@ -115,6 +116,18 @@ describe('render smoke tests', () => {
     expect(rankingMarkup).toContain('+48123123123')
     expect(rankingMarkup).toContain('4200')
     expect(rankingMarkup).toContain('L03')
+  })
+
+  it('shows the startup intro before the idle menu and keeps the board hidden', () => {
+    const markup = renderToStaticMarkup(<GameScreen />)
+
+    expect(markup).toContain('main-menu-backdrop')
+    expect(markup).toContain('intro-overlay')
+    expect(markup).toContain('intro-logo')
+    expect(markup).not.toContain('main-menu-panel-main')
+    expect(markup).not.toContain('svg-stage')
+    expect(markup).not.toContain('board-wall-layer')
+    expect(markup).not.toContain('board-collectible-layer')
   })
 
   it('renders game over result with score, time and player nick', () => {

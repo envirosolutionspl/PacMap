@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 
 import { Ghost } from '../entities/Ghost'
 import { Player } from '../entities/Player'
@@ -55,6 +55,7 @@ import { FullscreenButton } from './FullscreenButton'
 import { GameBoard } from './GameBoard'
 import { GameOverOverlay } from './GameOverOverlay'
 import { Hud } from './Hud'
+import { IntroOverlay } from './IntroOverlay'
 import { LevelCompleteOverlay } from './LevelCompleteOverlay'
 import { MainMenuBackdrop, StartOverlay } from './StartOverlay'
 import { SvgStage } from './SvgStage'
@@ -69,6 +70,14 @@ const TIME_BONUS_POINTS_PER_SECOND = 10
 const GAME_OVER_RESULT_DURATION_MS = 5000
 const LEVEL_COMPLETE_DURATION_MS = 5000
 const MENU_MUSIC_DELAY_MS = 3000
+const GAME_BOARD_SCALE_STORAGE_KEY = 'pac-map-game-board-scale-v1'
+const INTRO_OVERLAY_SCALE_STORAGE_KEY = 'pac-map-intro-overlay-scale-v1'
+const DEFAULT_GAME_BOARD_SCALE = 1
+const MIN_GAME_BOARD_SCALE = 0.5
+const MAX_GAME_BOARD_SCALE = 1
+const DEFAULT_INTRO_OVERLAY_SCALE = 1
+const MIN_INTRO_OVERLAY_SCALE = 0.8
+const MAX_INTRO_OVERLAY_SCALE = 2.5
 
 export function GameScreen(): React.JSX.Element {
   const initialMusicVolumes = useMemo(() => readMusicVolumePreferences(), [])
@@ -84,9 +93,14 @@ export function GameScreen(): React.JSX.Element {
   const rankingFileApi = useMemo(() => getRankingFileApi(), [])
   const initialGameState = useMemo(() => createIdleGameState(firstLevel), [])
   const [gameState, setGameState] = useState(initialGameState)
+  const [isIntroActive, setIsIntroActive] = useState(true)
   const [isAudioMuted, setIsAudioMuted] = useState(() => audioManager.isMuted())
   const [menuMusicVolume, setMenuMusicVolume] = useState(initialMusicVolumes.menu)
   const [gameMusicVolume, setGameMusicVolume] = useState(initialMusicVolumes.game)
+  const [gameBoardScale, setGameBoardScale] = useState(() => readGameBoardScalePreference())
+  const [introOverlayScale, setIntroOverlayScale] = useState(() =>
+    readIntroOverlayScalePreference()
+  )
   const [rankingEntries, setRankingEntries] = useState<readonly RankingEntry[]>(() =>
     rankingStorage.list()
   )
@@ -123,9 +137,26 @@ export function GameScreen(): React.JSX.Element {
     gameState.levelIndex + 1 < levels.length ? getLevelAt(levels, gameState.levelIndex + 1) : null
   const levelIsFinal = isFinalLevel(levels, gameState.levelIndex)
   const isHudVisible = isGameplayPhase(gameState.phase)
-  const isMenuVisible = gameState.phase === 'idle'
-  const isGameMusicActive = !isMenuVisible
+  const isStartSurfaceVisible = gameState.phase === 'idle'
+  const isIntroVisible = isStartSurfaceVisible && isIntroActive
+  const isMenuVisible = isStartSurfaceVisible && !isIntroActive
+  const isGameMusicActive = !isStartSurfaceVisible
   const levelHudLabel = formatLevelHudLabel(gameState.levelIndex, currentLevel.name)
+  const gameStageStyle = useMemo(
+    () =>
+      ({
+        aspectRatio: `${currentLevel.width} / ${currentLevel.height}`,
+        '--game-board-scale': String(gameBoardScale)
+      }) as CSSProperties,
+    [currentLevel.height, currentLevel.width, gameBoardScale]
+  )
+  const introOverlayStyle = useMemo(
+    () =>
+      ({
+        '--intro-overlay-scale': String(introOverlayScale)
+      }) as CSSProperties,
+    [introOverlayScale]
+  )
 
   const clearDirectionBuffer = useCallback(() => {
     directionBufferRef.current = null
@@ -172,21 +203,42 @@ export function GameScreen(): React.JSX.Element {
     [audioManager]
   )
 
+  const handleGameBoardScaleChange = useCallback((scale: number): void => {
+    const normalizedScale = normalizeGameBoardScale(scale)
+
+    writeGameBoardScalePreference(normalizedScale)
+    setGameBoardScale(normalizedScale)
+  }, [])
+
+  const handleIntroOverlayScaleChange = useCallback((scale: number): void => {
+    const normalizedScale = normalizeIntroOverlayScale(scale)
+
+    writeIntroOverlayScalePreference(normalizedScale)
+    setIntroOverlayScale(normalizedScale)
+  }, [])
+
+  const handleDismissIntro = useCallback((): void => {
+    setIsIntroActive(false)
+  }, [])
+
   useEffect(() => {
-    if (!isMenuVisible || isAudioMuted) {
+    if (!isStartSurfaceVisible || isAudioMuted) {
       audioManager.stopMenuMusic()
       return
     }
 
-    const timeoutId = window.setTimeout(() => {
-      audioManager.playMenuMusic()
-    }, MENU_MUSIC_DELAY_MS)
+    const timeoutId = window.setTimeout(
+      () => {
+        audioManager.playMenuMusic()
+      },
+      isIntroVisible ? 0 : MENU_MUSIC_DELAY_MS
+    )
 
     return () => {
       window.clearTimeout(timeoutId)
       audioManager.stopMenuMusic()
     }
-  }, [audioManager, isAudioMuted, isMenuVisible])
+  }, [audioManager, isAudioMuted, isIntroVisible, isStartSurfaceVisible])
 
   useEffect(() => {
     if (!isGameMusicActive || isAudioMuted) {
@@ -765,6 +817,16 @@ export function GameScreen(): React.JSX.Element {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent): void => {
+      if (
+        isIntroActive &&
+        gamePhaseRef.current === 'idle' &&
+        (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar')
+      ) {
+        event.preventDefault()
+        setIsIntroActive(false)
+        return
+      }
+
       const action = getKeyboardAction(event.key)
 
       if (isTextInputTarget(event.target)) {
@@ -858,6 +920,7 @@ export function GameScreen(): React.JSX.Element {
   }, [
     handleReturnToStartMenu,
     handleToggleAudio,
+    isIntroActive,
     pauseLevelTimer,
     playInteractiveSound,
     resumeLevelTimer
@@ -1021,8 +1084,9 @@ export function GameScreen(): React.JSX.Element {
   ])
 
   return (
-    <main className="game-shell">
-      {isMenuVisible && <MainMenuBackdrop />}
+    <main className={`game-shell${isIntroVisible ? ' game-shell-intro' : ''}`}>
+      {isStartSurfaceVisible && <MainMenuBackdrop />}
+      {isIntroVisible && <IntroOverlay onDismiss={handleDismissIntro} style={introOverlayStyle} />}
       <section
         className={`game-layout${isHudVisible ? '' : ' game-layout-hudless'}`}
         aria-label="Pac-Map"
@@ -1042,31 +1106,30 @@ export function GameScreen(): React.JSX.Element {
               IDŹ W OPENSOURCE I UNIKAJ KOSZTÓW
             </div>
           )}
-          <div
-            className="game-stage"
-            style={{ aspectRatio: `${currentLevel.width} / ${currentLevel.height}` }}
-          >
-            <SvgStage level={currentLevel}>
-              <GameBoard
-                level={currentLevel}
-                collectibles={gameState.collectibles}
-                cityBiomeLayout={cityBiomeLayout}
-              />
-              {gameState.ghosts.map((ghost, index) => (
-                <Ghost
-                  key={ghost.id}
-                  ghost={ghost}
-                  tileSize={TILE_SIZE}
-                  index={index}
-                  skinId={gameState.skins.ghost}
+          <div className="game-stage" style={gameStageStyle}>
+            {!isStartSurfaceVisible && (
+              <SvgStage level={currentLevel}>
+                <GameBoard
+                  level={currentLevel}
+                  collectibles={gameState.collectibles}
+                  cityBiomeLayout={cityBiomeLayout}
                 />
-              ))}
-              <Player
-                player={gameState.player}
-                tileSize={TILE_SIZE}
-                skinId={gameState.skins.player}
-              />
-            </SvgStage>
+                {gameState.ghosts.map((ghost, index) => (
+                  <Ghost
+                    key={ghost.id}
+                    ghost={ghost}
+                    tileSize={TILE_SIZE}
+                    index={index}
+                    skinId={gameState.skins.ghost}
+                  />
+                ))}
+                <Player
+                  player={gameState.player}
+                  tileSize={TILE_SIZE}
+                  skinId={gameState.skins.player}
+                />
+              </SvgStage>
+            )}
             {gameState.phase === 'ready' && (
               <div className="stage-banner stage-banner-level">
                 <span className="stage-banner-level-name">{currentLevel.name}</span>
@@ -1074,7 +1137,7 @@ export function GameScreen(): React.JSX.Element {
               </div>
             )}
             {gameState.phase === 'paused' && <div className="stage-banner">Paused</div>}
-            {gameState.phase === 'idle' && (
+            {isMenuVisible && (
               <StartOverlay
                 ghostSkinLabel={getGhostSkinLabel(gameState.skins.ghost)}
                 isAudioMuted={isAudioMuted}
@@ -1089,6 +1152,8 @@ export function GameScreen(): React.JSX.Element {
                 isTimedModeEnabled={isTimedModeEnabled}
                 menuMusicVolume={menuMusicVolume}
                 gameMusicVolume={gameMusicVolume}
+                gameBoardScale={gameBoardScale}
+                introOverlayScale={introOverlayScale}
                 timeLimitMinutes={timeLimitSeconds.map((seconds) => seconds / 60)}
                 onStart={handleNewGame}
                 onPlayerNameChange={setPlayerName}
@@ -1097,6 +1162,8 @@ export function GameScreen(): React.JSX.Element {
                 onToggleAudio={handleToggleAudio}
                 onMenuMusicVolumeChange={handleMenuMusicVolumeChange}
                 onGameMusicVolumeChange={handleGameMusicVolumeChange}
+                onGameBoardScaleChange={handleGameBoardScaleChange}
+                onIntroOverlayScaleChange={handleIntroOverlayScaleChange}
                 onClearRankings={handleClearRankings}
                 onVerifyClearRankingsPassword={verifyGodModePassword}
                 onChooseRankingFile={handleChooseRankingFile}
@@ -1135,8 +1202,8 @@ export function GameScreen(): React.JSX.Element {
             onNextLevel={handleManualNextLevel}
           />
         )}
-        <FullscreenButton />
       </section>
+      <FullscreenButton />
     </main>
   )
 }
@@ -1192,6 +1259,70 @@ function getElapsedGameTimeMs(startedAt: number | null): number {
 
 function clampTimeLimitSeconds(seconds: number): number {
   return Math.min(MAX_TIME_LIMIT_SECONDS, Math.max(MIN_TIME_LIMIT_SECONDS, Math.round(seconds)))
+}
+
+function normalizeGameBoardScale(scale: number): number {
+  if (!Number.isFinite(scale)) {
+    return DEFAULT_GAME_BOARD_SCALE
+  }
+
+  return Math.min(MAX_GAME_BOARD_SCALE, Math.max(MIN_GAME_BOARD_SCALE, scale))
+}
+
+function normalizeIntroOverlayScale(scale: number): number {
+  if (!Number.isFinite(scale)) {
+    return DEFAULT_INTRO_OVERLAY_SCALE
+  }
+
+  return Math.min(MAX_INTRO_OVERLAY_SCALE, Math.max(MIN_INTRO_OVERLAY_SCALE, scale))
+}
+
+function readGameBoardScalePreference(storage = getLocalStorage()): number {
+  if (!storage) {
+    return DEFAULT_GAME_BOARD_SCALE
+  }
+
+  const storedValue = storage.getItem(GAME_BOARD_SCALE_STORAGE_KEY)
+
+  if (storedValue === null) {
+    return DEFAULT_GAME_BOARD_SCALE
+  }
+
+  const storedScale = Number(storedValue)
+
+  return normalizeGameBoardScale(storedScale)
+}
+
+function writeGameBoardScalePreference(scale: number, storage = getLocalStorage()): void {
+  storage?.setItem(GAME_BOARD_SCALE_STORAGE_KEY, String(normalizeGameBoardScale(scale)))
+}
+
+function readIntroOverlayScalePreference(storage = getLocalStorage()): number {
+  if (!storage) {
+    return DEFAULT_INTRO_OVERLAY_SCALE
+  }
+
+  const storedValue = storage.getItem(INTRO_OVERLAY_SCALE_STORAGE_KEY)
+
+  if (storedValue === null) {
+    return DEFAULT_INTRO_OVERLAY_SCALE
+  }
+
+  const storedScale = Number(storedValue)
+
+  return normalizeIntroOverlayScale(storedScale)
+}
+
+function writeIntroOverlayScalePreference(scale: number, storage = getLocalStorage()): void {
+  storage?.setItem(INTRO_OVERLAY_SCALE_STORAGE_KEY, String(normalizeIntroOverlayScale(scale)))
+}
+
+function getLocalStorage(): Storage | undefined {
+  if (typeof window === 'undefined') {
+    return undefined
+  }
+
+  return window.localStorage
 }
 
 function hasLevelTimerExpired(now: number, endsAt: number): boolean {

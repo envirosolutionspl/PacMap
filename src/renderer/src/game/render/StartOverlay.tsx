@@ -171,6 +171,8 @@ interface StartOverlayProps {
   readonly isTimedModeEnabled: boolean
   readonly menuMusicVolume: number
   readonly gameMusicVolume: number
+  readonly gameBoardScale?: number
+  readonly introOverlayScale?: number
   readonly timeLimitMinutes: readonly number[]
   readonly onStart: () => void
   readonly onPlayerNameChange: (playerName: string) => void
@@ -179,6 +181,8 @@ interface StartOverlayProps {
   readonly onToggleAudio: () => void
   readonly onMenuMusicVolumeChange: (volume: number) => void
   readonly onGameMusicVolumeChange: (volume: number) => void
+  readonly onGameBoardScaleChange?: (scale: number) => void
+  readonly onIntroOverlayScaleChange?: (scale: number) => void
   readonly onClearRankings: () => void
   readonly onVerifyClearRankingsPassword: (password: string) => boolean
   readonly onChooseRankingFile: () => void
@@ -202,6 +206,8 @@ export function StartOverlay({
   isTimedModeEnabled,
   menuMusicVolume,
   gameMusicVolume,
+  gameBoardScale = 1,
+  introOverlayScale = 1,
   timeLimitMinutes,
   onStart,
   onPlayerNameChange,
@@ -210,6 +216,8 @@ export function StartOverlay({
   onToggleAudio,
   onMenuMusicVolumeChange,
   onGameMusicVolumeChange,
+  onGameBoardScaleChange = () => undefined,
+  onIntroOverlayScaleChange = () => undefined,
   onClearRankings,
   onVerifyClearRankingsPassword,
   onChooseRankingFile,
@@ -321,11 +329,15 @@ export function StartOverlay({
             isTimedModeEnabled={isTimedModeEnabled}
             menuMusicVolume={menuMusicVolume}
             gameMusicVolume={gameMusicVolume}
+            gameBoardScale={gameBoardScale}
+            introOverlayScale={introOverlayScale}
             timeLimitMinutes={timeLimitMinutes}
             onCycleGhostSkin={onCycleGhostSkin}
             onToggleAudio={onToggleAudio}
             onMenuMusicVolumeChange={onMenuMusicVolumeChange}
             onGameMusicVolumeChange={onGameMusicVolumeChange}
+            onGameBoardScaleChange={onGameBoardScaleChange}
+            onIntroOverlayScaleChange={onIntroOverlayScaleChange}
             onChooseRankingFile={onChooseRankingFile}
             onVerifyGodModePassword={onVerifyGodModePassword}
             onDisableGodMode={onDisableGodMode}
@@ -954,11 +966,15 @@ function SettingsMenu({
   isTimedModeEnabled,
   menuMusicVolume,
   gameMusicVolume,
+  gameBoardScale,
+  introOverlayScale,
   timeLimitMinutes,
   onCycleGhostSkin,
   onToggleAudio,
   onMenuMusicVolumeChange,
   onGameMusicVolumeChange,
+  onGameBoardScaleChange,
+  onIntroOverlayScaleChange,
   onChooseRankingFile,
   onVerifyGodModePassword,
   onDisableGodMode,
@@ -976,11 +992,15 @@ function SettingsMenu({
   readonly isTimedModeEnabled: boolean
   readonly menuMusicVolume: number
   readonly gameMusicVolume: number
+  readonly gameBoardScale: number
+  readonly introOverlayScale: number
   readonly timeLimitMinutes: readonly number[]
   readonly onCycleGhostSkin: () => void
   readonly onToggleAudio: () => void
   readonly onMenuMusicVolumeChange: (volume: number) => void
   readonly onGameMusicVolumeChange: (volume: number) => void
+  readonly onGameBoardScaleChange: (scale: number) => void
+  readonly onIntroOverlayScaleChange: (scale: number) => void
   readonly onChooseRankingFile: () => void
   readonly onVerifyGodModePassword: (password: string) => boolean
   readonly onDisableGodMode: () => void
@@ -1036,17 +1056,36 @@ function SettingsMenu({
       </div>
       <div className="settings-volume-panel">
         <span className="settings-file-label">Volume</span>
-        <VolumeControl
+        <SettingsSlider
           id="menu-music-volume"
           label="Main menu"
           value={menuMusicVolume}
           onChange={onMenuMusicVolumeChange}
         />
-        <VolumeControl
+        <SettingsSlider
           id="game-music-volume"
           label="Game"
           value={gameMusicVolume}
           onChange={onGameMusicVolumeChange}
+        />
+      </div>
+      <div className="settings-volume-panel">
+        <span className="settings-file-label">Display</span>
+        <SettingsSlider
+          id="game-board-scale"
+          label="Board size"
+          min={50}
+          max={100}
+          value={gameBoardScale}
+          onChange={onGameBoardScaleChange}
+        />
+        <SettingsSlider
+          id="intro-overlay-scale"
+          label="Intro overlay"
+          min={80}
+          max={250}
+          value={introOverlayScale}
+          onChange={onIntroOverlayScaleChange}
         />
       </div>
       <form className="settings-godmode" onSubmit={handleGodModeSubmit}>
@@ -1168,31 +1207,39 @@ function SettingsMenu({
   )
 }
 
-function VolumeControl({
+function SettingsSlider({
   id,
   label,
+  min = 0,
+  max = 100,
+  step = 1,
   value,
   onChange
 }: {
   readonly id: string
   readonly label: string
+  readonly min?: number
+  readonly max?: number
+  readonly step?: number
   readonly value: number
   readonly onChange: (volume: number) => void
 }): React.JSX.Element {
+  const percentValue = Math.round(value * 100)
+
   return (
     <label className="settings-volume-control" htmlFor={id}>
       <span className="settings-volume-label-row">
         <span>{label}</span>
-        <span className="settings-volume-value">{Math.round(value * 100)}%</span>
+        <span className="settings-volume-value">{percentValue}%</span>
       </span>
       <input
         className="settings-volume-slider"
         id={id}
-        min={0}
-        max={100}
-        step={1}
+        min={min}
+        max={max}
+        step={step}
         type="range"
-        value={Math.round(value * 100)}
+        value={percentValue}
         onChange={(event) => onChange(event.currentTarget.valueAsNumber / 100)}
       />
     </label>
@@ -1290,15 +1337,24 @@ function getMenuButtons(root: HTMLElement | null): HTMLButtonElement[] {
 }
 
 function focusFirstMenuElement(root: HTMLElement | null): void {
-  const input = root?.querySelector<HTMLInputElement>('input[data-menu-autofocus]')
-
-  if (input) {
-    input.focus()
-    input.select()
+  if (!root) {
     return
   }
 
-  getMenuButtons(root)[0]?.focus()
+  root.scrollTop = 0
+  root.scrollLeft = 0
+
+  const input = root?.querySelector<HTMLInputElement>('input[data-menu-autofocus]')
+
+  if (input) {
+    input.focus({ preventScroll: true })
+    input.select()
+    root.scrollTop = 0
+    return
+  }
+
+  getMenuButtons(root)[0]?.focus({ preventScroll: true })
+  root.scrollTop = 0
 }
 
 function wrapIndex(index: number, length: number): number {

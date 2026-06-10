@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, type MouseEvent } from 'react'
 
 import { getWindowControlApi } from '../window/windowControls'
 
@@ -30,27 +30,32 @@ export function FullscreenButton(): React.JSX.Element {
     }
   }, [windowControlApi])
 
-  const handleClick = useCallback(async (): Promise<void> => {
-    try {
-      if (windowControlApi) {
-        setIsFullscreen(await windowControlApi.toggleFullscreen())
-        return
-      }
+  const handleClick = useCallback(
+    async (event: MouseEvent<HTMLButtonElement>): Promise<void> => {
+      event.stopPropagation()
 
-      if (document.fullscreenElement) {
-        await document.exitFullscreen()
-        setIsFullscreen(false)
-        return
-      }
+      try {
+        if (windowControlApi) {
+          setIsFullscreen(await windowControlApi.toggleFullscreen())
+          return
+        }
 
-      if (typeof document.documentElement.requestFullscreen === 'function') {
-        await document.documentElement.requestFullscreen()
-        setIsFullscreen(true)
+        if (document.fullscreenElement) {
+          await document.exitFullscreen()
+          setIsFullscreen(false)
+          return
+        }
+
+        if (typeof document.documentElement.requestFullscreen === 'function') {
+          await document.documentElement.requestFullscreen()
+          setIsFullscreen(true)
+        }
+      } catch {
+        setIsFullscreen(Boolean(document.fullscreenElement))
       }
-    } catch {
-      setIsFullscreen(Boolean(document.fullscreenElement))
-    }
-  }, [windowControlApi])
+    },
+    [windowControlApi]
+  )
 
   const label = isFullscreen ? 'Wyjdz z pelnego ekranu' : 'Pelny ekran'
 

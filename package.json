@@ -1,6 +1,6 @@
 {
   "name": "PacMap",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Gra komputerowa PacMap stworzona na potrzeby marketingu EnviroSolutions",
   "main": "./out/main/index.js",
   "author": "EnviroSolutions",

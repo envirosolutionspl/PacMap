@@ -12,7 +12,9 @@ body {
 }
 
 .game-shell {
-  --menu-stage-size: clamp(600px, 88vmin, 1120px);
+  --menu-stage-size: clamp(520px, 72vmin, 860px);
+  --game-board-scale: 1;
+  --gameplay-reserved-height: clamp(250px, 34vh, 330px);
 
   position: relative;
   width: 100%;
@@ -179,7 +181,7 @@ body {
 
 .game-stage {
   position: relative;
-  width: min(70vh, 840px, 100%);
+  width: min(100%, 840px, calc((100vh - var(--gameplay-reserved-height)) * var(--game-board-scale)));
   min-width: 0;
   max-width: 100%;
   aspect-ratio: 1;
@@ -210,9 +212,9 @@ body {
 }
 
 .company-logo-menu {
-  width: clamp(240px, 28vw, 340px);
-  height: clamp(240px, 28vw, 340px);
-  margin-bottom: clamp(14px, 1.8vmin, 24px);
+  width: clamp(180px, 22vw, 260px);
+  height: clamp(180px, 22vw, 260px);
+  margin-bottom: clamp(10px, 1.4vmin, 18px);
 }
 
 .company-logo-stage {
@@ -225,7 +227,7 @@ body {
   position: fixed;
   right: clamp(20px, 3vw, 48px);
   bottom: clamp(20px, 3vw, 48px);
-  z-index: 8;
+  z-index: 12;
   width: clamp(48px, 3.8vw, 72px);
   height: clamp(48px, 3.8vw, 72px);
   display: grid;
@@ -682,7 +684,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(7, 8, 13, 0.58);
+  background: rgba(0, 0, 0, 0);
   z-index: 4;
 }
 
@@ -698,20 +700,34 @@ body {
 
 .main-menu-panel {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: min(460px, calc(100% - 32px));
+  height: auto;
+  max-height: calc(100% - 32px);
   max-width: none;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(20px, 5vw, 44px);
+  padding: clamp(18px, 3vmin, 32px);
   background:
     radial-gradient(circle at 50% 40%, rgba(21, 35, 61, 0.96), rgba(7, 8, 13, 0.96) 64%),
     rgba(7, 8, 13, 0.96);
   overflow: hidden;
   text-align: center;
+}
+
+.main-menu-panel-player,
+.main-menu-panel-scores {
+  width: min(520px, calc(100% - 32px));
+}
+
+.main-menu-panel-settings {
+  width: min(720px, calc(100% - 32px));
+}
+
+.main-menu-panel-tutorial {
+  width: min(620px, calc(100% - 32px));
 }
 
 .main-menu-backdrop {
@@ -720,6 +736,10 @@ body {
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+}
+
+.game-shell-intro .main-menu-backdrop {
+  z-index: 5;
 }
 
 .main-menu-backdrop::after {
@@ -745,8 +765,121 @@ body {
   opacity: 1;
 }
 
+.intro-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: clamp(18px, 4vmin, 42px);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  overflow: visible;
+  text-align: center;
+}
+
+.intro-overlay:focus-visible {
+  outline: 2px solid var(--color-yellow);
+  outline-offset: -6px;
+}
+
+.intro-card {
+  position: relative;
+  z-index: 1;
+  width: min(
+    calc(760px * var(--intro-overlay-scale, 1)),
+    calc(100vw - clamp(36px, 8vmin, 96px))
+  );
+  min-height: min(
+    calc(300px * var(--intro-overlay-scale, 1)),
+    calc(100vh - clamp(36px, 8vmin, 96px))
+  );
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.intro-logo {
+  width: 100%;
+  max-height: calc(100vh - clamp(120px, 18vmin, 220px));
+  height: auto;
+  object-fit: contain;
+  animation: intro-logo-drive-in 900ms cubic-bezier(0.2, 0.9, 0.22, 1) both;
+  image-rendering: auto;
+}
+
+.intro-ghost-track {
+  position: absolute;
+  z-index: 2;
+  left: -42%;
+  width: 44%;
+  min-width: 260px;
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(18px, 4vmin, 44px);
+  pointer-events: none;
+  filter: drop-shadow(0 0 18px rgba(255, 216, 77, 0.22));
+}
+
+.intro-ghost-track-top {
+  top: clamp(14px, 4vmin, 46px);
+  animation: intro-ghosts-left-to-right 7.5s linear infinite;
+}
+
+.intro-ghost-track-bottom {
+  right: -42%;
+  bottom: clamp(14px, 4vmin, 46px);
+  left: auto;
+  animation: intro-ghosts-right-to-left 8.2s linear infinite;
+}
+
+.intro-ghost {
+  width: clamp(42px, 7vmin, 68px);
+  height: clamp(42px, 7vmin, 68px);
+  display: block;
+}
+
+@keyframes intro-logo-drive-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-34%) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes intro-ghosts-left-to-right {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(340%);
+  }
+}
+
+@keyframes intro-ghosts-right-to-left {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-340%);
+  }
+}
+
 .main-menu-panel .game-overlay-actions {
-  width: min(420px, 100%);
+  width: min(360px, 100%);
 }
 
 .main-menu-panel .ranking-list {
@@ -776,10 +909,11 @@ body {
 
 .main-menu-panel-settings {
   justify-content: flex-start;
+  scroll-padding-top: clamp(18px, 3vmin, 32px);
 }
 
 .main-menu-panel:not(.main-menu-panel-main) {
-  overflow: hidden;
+  overflow: auto;
 }
 
 .main-menu-panel.main-menu-panel-settings {
@@ -788,6 +922,12 @@ body {
   scrollbar-color: rgba(255, 216, 77, 0.78) rgba(16, 19, 26, 0.68);
   scrollbar-gutter: stable;
   scrollbar-width: thin;
+}
+
+.main-menu-panel-settings .company-logo-menu {
+  width: clamp(96px, 12vmin, 140px);
+  height: clamp(96px, 12vmin, 140px);
+  margin-top: 0;
 }
 
 .main-menu-panel-scores {
@@ -1479,8 +1619,8 @@ body {
 }
 
 .main-menu-panel .game-overlay-action {
-  min-height: clamp(46px, 4.8vmin, 58px);
-  font-size: clamp(1rem, 1.45vmin, 1.2rem);
+  min-height: clamp(42px, 4vmin, 52px);
+  font-size: clamp(0.92rem, 1.18vmin, 1.08rem);
 }
 
 .main-menu-panel .ranking-input {
@@ -1509,6 +1649,8 @@ body {
 
 @media (min-width: 1200px) and (min-height: 800px) {
   .game-shell {
+    --gameplay-reserved-height: clamp(300px, 32vh, 380px);
+
     padding: 32px;
     background-size: 64px 64px;
   }
@@ -1557,17 +1699,34 @@ body {
   }
 
   .main-menu-panel {
-    padding: clamp(40px, 5vmin, 72px);
+    padding: clamp(24px, 3.2vmin, 40px);
+  }
+
+  .main-menu-panel-main {
+    width: min(480px, calc(100% - 64px));
+  }
+
+  .main-menu-panel-player,
+  .main-menu-panel-scores {
+    width: min(560px, calc(100% - 64px));
+  }
+
+  .main-menu-panel-settings {
+    width: min(760px, calc(100% - 64px));
+  }
+
+  .main-menu-panel-tutorial {
+    width: min(660px, calc(100% - 64px));
   }
 
   .main-menu-panel-settings {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-content: center;
+    align-content: start;
     justify-items: center;
     column-gap: 36px;
     row-gap: 8px;
-    padding: clamp(28px, 3vmin, 48px);
+    padding: clamp(22px, 2.5vmin, 36px);
   }
 
   .main-menu-panel-settings > .company-logo-menu,
@@ -1586,13 +1745,13 @@ body {
   }
 
   .main-menu-panel-settings .company-logo-menu {
-    width: clamp(112px, 12vmin, 150px);
-    height: clamp(112px, 12vmin, 150px);
+    width: clamp(92px, 10vmin, 128px);
+    height: clamp(92px, 10vmin, 128px);
   }
 
   .main-menu-panel-main .company-logo-menu {
-    width: clamp(320px, 30vmin, 420px);
-    height: clamp(320px, 30vmin, 420px);
+    width: clamp(220px, 22vmin, 300px);
+    height: clamp(220px, 22vmin, 300px);
   }
 
   .main-menu-panel .game-overlay-actions,
@@ -1602,17 +1761,17 @@ body {
   .settings-timemode,
   .settings-volume-panel,
   .scores-clear-form {
-    width: min(480px, 100%);
+    width: min(420px, 100%);
   }
 
   .main-menu-panel .game-overlay-actions {
-    gap: 14px;
+    gap: 10px;
   }
 
   .main-menu-panel .game-overlay-action {
-    min-height: clamp(58px, 5.5vmin, 72px);
-    padding-inline: 22px;
-    font-size: clamp(1.15rem, 1.6vmin, 1.35rem);
+    min-height: clamp(46px, 4.2vmin, 58px);
+    padding-inline: 18px;
+    font-size: clamp(1rem, 1.25vmin, 1.16rem);
   }
 
   .main-menu-panel-settings .game-overlay-action {
@@ -1668,6 +1827,11 @@ body {
   .main-menu-backdrop {
     display: none;
   }
+
+  .intro-logo,
+  .intro-ghost-track {
+    animation: none;
+  }
 }
 
 @media (max-width: 1480px) {
@@ -1706,7 +1870,11 @@ body {
   }
 
   .game-stage {
-    width: min(100%, calc(100vw - 32px));
+    width: min(
+      100%,
+      calc((100vw - 32px) * var(--game-board-scale)),
+      calc((100vh - 240px) * var(--game-board-scale))
+    );
   }
 
   .godmode-biome-panel {
@@ -1721,15 +1889,16 @@ body {
   }
 
   .main-menu-panel {
-    width: 100%;
-    height: 100%;
+    width: min(100%, calc(100% - 16px));
+    height: auto;
+    max-height: calc(100% - 16px);
     max-width: none;
-    padding: 16px;
+    padding: 14px;
   }
 
   .company-logo-menu {
-    width: clamp(160px, 46vw, 240px);
-    height: clamp(160px, 46vw, 240px);
+    width: clamp(136px, 40vw, 200px);
+    height: clamp(136px, 40vw, 200px);
   }
 
   .main-menu-panel:not(.main-menu-panel-main) .company-logo-menu,
