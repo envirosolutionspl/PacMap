@@ -6,7 +6,7 @@ import type {
 } from './rankingTypes'
 
 export const LOCAL_RANKING_KEY = 'pac-map-ranking-v1'
-export const RANKING_LIMIT = 10
+export const RANKING_LIMIT = 10000000000000000000000000
 const DEFAULT_PLAYER_NAME = 'PLAYER'
 const PHONE_ALLOWED_CHARACTERS = /[^\d()+\-\s]/g
 
