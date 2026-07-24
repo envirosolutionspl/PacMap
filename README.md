@@ -1,3 +1,7 @@
+## Licencja
+
+Projekt jest udostępniany na licencji GNU General Public License v3.0 (GPL-3.0).
+
 # PacMap
 
 PacMap to desktopowa gra arcade dla EnviroSolutions, zbudowana w Electronie, React i TypeScript. Aplikacja przenosi klasyczny schemat labiryntu na motyw marketingowy OpenSource: gracz zbiera punkty, projekty i logo QGIS, unika kosztów, przechodzi kolejne dzielnice oraz zapisuje wynik w lokalnym rankingu.
@@ -248,3 +252,5 @@ Artefakty builda trafiają do katalogu `dist/`. Katalogi `dist/`, `out/`, `node_
 - Poziomy powinny być deklaratywne, bez logiki w komponentach.
 - Animacje SVG powinny bazować głównie na `transform` i `opacity`.
 - Przy zmianach gameplayu dopisz lub zaktualizuj test w tym samym obszarze.
+
+

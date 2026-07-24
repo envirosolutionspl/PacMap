@@ -6,3 +6,6 @@ out
 *.log*
 .codex-tmp
 .vscode
+
+compile-macos
+compile-linux
